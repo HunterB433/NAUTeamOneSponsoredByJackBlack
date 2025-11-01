@@ -2,29 +2,39 @@ using UnityEngine;
 
 public class WormMove : MonoBehaviour
 {
-    public float minX = -5f;
-    public float maxX = 5f;
-
-
+    public float speed = 1.0f;
+    public Vector3 pointA;
+    public Vector3 pointB;
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
-        
+        pointA = transform.position;
+        pointB = transform.position + new Vector3(1.4f, 0f, 0f);
     }
 
     // Update is called once per frame
     void Update()
     {   
-        if(transform.position.x > -0.7f || transform.position.x < 0.7f)
-        {
-            transform.position += Vector3.right * Time.deltaTime; 
-        }
-        
 
-        // // guhh
-        // Vector3 currentPosition = transform.position;
-        // currentPosition.x = Mathf.Clamp(currentPosition.x, minX, maxX);
-        // transform.position = currentPosition;
+        float time = Mathf.PingPong(Time.time * speed, 1);
+
+        transform.position = Vector3.Lerp(pointA,  pointB, time);
+
+
+
+
+        // if(transform.position.x < 0.7f)as
+        // {
+        //     transform.rotation = Quaternion.Euler(0, 90, -90);
+        //     transform.position += Vector3.right * Time.deltaTime; 
+        // }
+
+        // else if (transform.position.x > -0.7f)
+        // {
+        //     transform.rotation = Quaternion.Euler(180, 90, -90);
+        //     transform.position -= Vector3.right * Time.deltaTime; 
+        // }
+        
 
     }
 }
