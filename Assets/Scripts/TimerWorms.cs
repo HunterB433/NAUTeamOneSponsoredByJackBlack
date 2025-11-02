@@ -89,7 +89,7 @@ public class TimerWorms : MonoBehaviour
 
         if (accuracyText != null)
         {
-            accuracyText.text = $"Accuracy: {(accuracy * 100f):0}%";
+            accuracyText.text = $"Accuracy: {(accuracy * 100f):0.00}%";
         }
     }
 }
