@@ -111,13 +111,13 @@ MonoBehaviour:
   m_EditorClassIdentifier: '::'
   targetPosition: {x: 122.9, y: 64.3, z: 119.4}
   speed: 45
-  shakeAmount: 5
-  shakeSpeed: 0.05
-  shakeDuration: 2
-  minX: 100
-  maxX: 150
-  minZ: 65
-  maxZ: 100
+  shakeAmount: 3
+  shakeSpeed: 0.04
+  shakeDuration: 1
+  minX: 65
+  maxX: 100
+  minZ: 75
+  maxZ: 155
   fixedY: 45
   bounceSpeed: 3
 --- !u!65 &867773553580551347
