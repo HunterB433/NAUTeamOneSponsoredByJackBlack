@@ -5,7 +5,7 @@ TagManager:
   serializedVersion: 3
   tags:
   - MainEyeball
-  - InteractPoint
+  - Worm
   layers:
   - Default
   - TransparentFX
