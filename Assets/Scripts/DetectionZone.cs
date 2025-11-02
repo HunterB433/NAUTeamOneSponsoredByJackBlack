@@ -15,10 +15,13 @@ public class DetectionZone : MonoBehaviour
             // Perform actions related to worm detection
         }
     private bool wormInZone = false;
+    private Collider savedOther;
     public WormMove wormMove;
 
     private void OnTriggerEnter(Collider other)
     {
+        Debug.Log(other.name + " entered the detection zone!");
+        savedOther = other;
         wormInZone = true;
     }
 
