@@ -4,7 +4,7 @@ using UnityEngine;
 public class EyeBallMove : MonoBehaviour
 {
     [Header("Movement")]
-    public float speed = 10f;   // try 8–12
+    public float speed = 40f;   // try 8–12
 
     Rigidbody rb;
 
