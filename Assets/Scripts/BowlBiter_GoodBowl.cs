@@ -16,11 +16,15 @@ public class ClickMoveBounce : MonoBehaviour
     public float maxX = 150f;
     public float minZ = 100f;
     public float maxZ = 150f;
-    public float groundY = 64f; // height to stay at while bouncing
+    public float groundY = 64f;
 
     // ----- BOUNCING SETTINGS -----
     public float bounceSpeed = 3f;
     private Vector3 bounceDirection;
+
+    // ----- AUDIO -----
+    [Header("Audio")]
+    public AudioSource clickSound;
 
     // ----- INTERNAL VARIABLES -----
     private Camera mainCam;
@@ -52,6 +56,13 @@ public class ClickMoveBounce : MonoBehaviour
                 {
                     moveNow = true;
                     Debug.Log("Object clicked!");
+
+                    // Play sound immediately on click
+                    if (clickSound != null)
+                    {
+                        clickSound.Play();
+                        Debug.Log("Click sound played!");
+                    }
                 }
             }
         }
@@ -70,21 +81,21 @@ public class ClickMoveBounce : MonoBehaviour
                 moveNow = false;
                 Debug.Log("YOU WIN!!!");
 
-                // ----- TRIGGER SCRIPT B ON OBJECT B -----
+                // Trigger Script B
                 if (objectBScript != null)
                 {
                     objectBScript.ActivateSequence();
                     Debug.Log("Triggered Object B!");
                 }
 
-                // ----- UPDATE GLOBAL VARIABLE -----
+                // Update global variable
                 if (GlobalManager.Instance != null)
                 {
                     GlobalManager.Instance.completedBowl = true;
                     Debug.Log("completedBowl set to TRUE!");
                 }
 
-                // ----- SWITCH SCENE -----
+                // Switch scene
                 SceneManager.LoadScene("KitchenScene");
             }
         }
@@ -102,14 +113,11 @@ public class ClickMoveBounce : MonoBehaviour
         pos += bounceDirection * bounceSpeed * Time.deltaTime;
         pos.y = groundY;
 
-        // bounce off walls
         if (pos.x <= minX || pos.x >= maxX)
             bounceDirection.x = -bounceDirection.x;
-
         if (pos.z <= minZ || pos.z >= maxZ)
             bounceDirection.z = -bounceDirection.z;
 
-        // clamp inside room
         pos.x = Mathf.Clamp(pos.x, minX, maxX);
         pos.z = Mathf.Clamp(pos.z, minZ, maxZ);
 
