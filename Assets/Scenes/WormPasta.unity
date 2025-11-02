@@ -512,6 +512,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5223455f48a0b4c948a6195368ca3431, type: 3}
   m_Name: 
   m_EditorClassIdentifier: '::'
+<<<<<<< Updated upstream
+=======
+  wormMove: {fileID: 1967839723}
+>>>>>>> Stashed changes
 --- !u!65 &99461269
 BoxCollider:
   m_ObjectHideFlags: 0
