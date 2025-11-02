@@ -12,15 +12,18 @@ public class HoverMove : MonoBehaviour
     public Vector2 bottomRight = new Vector2(-10f, 10f);
     public Vector2 topLeft = new Vector2(10f, -10f);
 
+    private SceneSwitcher currentInteractTarget;
+
     void Start()
     {
-        // Disable physics if Rigidbody exists
         Rigidbody rb = GetComponent<Rigidbody>();
         if (rb != null)
         {
             rb.isKinematic = true;
             rb.detectCollisions = false;
         }
+
+        Debug.Log("HoverMove initialized on: " + gameObject.name);
     }
 
     void Update()
@@ -28,7 +31,6 @@ public class HoverMove : MonoBehaviour
         Vector3 move = Vector3.zero;
         float targetYRot = transform.eulerAngles.y;
 
-        // Remapped controls
         if (Input.GetKey(KeyCode.W))
         {
             move = Vector3.right * moveSpeed;
@@ -50,19 +52,14 @@ public class HoverMove : MonoBehaviour
             targetYRot = 0f;
         }
 
-        // Apply movement (frame-rate independent)
         transform.position += move * Time.deltaTime;
-
-        // Smooth rotation toward target direction
         Quaternion targetRot = Quaternion.Euler(0f, targetYRot, 0f);
         transform.rotation = Quaternion.Lerp(transform.rotation, targetRot, Time.deltaTime * rotationSpeed);
 
-        // Clamp position within bounds
         float clampedX = Mathf.Clamp(transform.position.x, topLeft.x, bottomRight.x);
         float clampedZ = Mathf.Clamp(transform.position.z, bottomRight.y, topLeft.y);
         transform.position = new Vector3(clampedX, transform.position.y, clampedZ);
 
-        // Maintain hover height
         Ray ray = new Ray(transform.position + Vector3.up, Vector3.down);
         if (Physics.Raycast(ray, out RaycastHit hit, 10f))
         {
@@ -74,15 +71,51 @@ public class HoverMove : MonoBehaviour
         {
             transform.position = new Vector3(transform.position.x, hoverHeight, transform.position.z);
         }
+
+        // ===== DEBUG INTERACTION SECTION =====
+        if (Input.GetKeyDown(KeyCode.E))
+        {
+            Debug.Log("E key pressed");
+            if (currentInteractTarget != null)
+            {
+                Debug.Log("About to switch scene via: " + currentInteractTarget.name);
+                currentInteractTarget.SwitchScene();
+            }
+            else
+            {
+                Debug.Log("Pressed E, but no active InteractPoint detected.");
+            }
+        }
     }
 
-    // for seeing interaction points
     void OnTriggerEnter(Collider other)
     {
         if (other.CompareTag("InteractPoint"))
         {
-            Debug.Log("InteractPoint entered trigger: " + other.name);
+            SceneSwitcher s = other.GetComponent<SceneSwitcher>();
+            if (s != null)
+            {
+                currentInteractTarget = s;
+                Debug.Log("Entered InteractPoint: " + other.name + " (SceneSwitcher found)");
+            }
+            else
+            {
+                Debug.LogWarning("Entered InteractPoint: " + other.name + " but NO SceneSwitcher found!");
+            }
         }
     }
 
+
+    void OnTriggerExit(Collider other)
+    {
+        if (other.CompareTag("InteractPoint"))
+        {
+            Debug.Log("Exited InteractPoint: " + other.name);
+            if (currentInteractTarget != null && other.GetComponent<SceneSwitcher>() == currentInteractTarget)
+            {
+                currentInteractTarget = null;
+                Debug.Log("Cleared current interact target.");
+            }
+        }
+    }
 }
