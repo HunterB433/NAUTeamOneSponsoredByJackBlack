@@ -3,31 +3,31 @@ using UnityEngine;
 [RequireComponent(typeof(Collider))]
 public class EyeCollectible : MonoBehaviour
 {
+    [Header("Who can collect")]
     [SerializeField] private string playerTag = "MainEyeball";
 
-    // Safety: prevent double-collect
     private bool picked = false;
 
-    // Reference to your GlobalManager (DontDestroyOnLoad)
-    private GlobalManager globalManager;
+    // Cache global manager once (static to avoid repeated Find)
+    private static GlobalManager globalManager;
 
     void Awake()
     {
-        // Cache the global manager once
-        globalManager = FindFirstObjectByType<GlobalManager>();
-        if (globalManager == null)
+        if (!globalManager)
         {
-            Debug.LogWarning("GlobalManager not found in scene!");
+            globalManager = FindFirstObjectByType<GlobalManager>();
+            if (!globalManager)
+                Debug.LogWarning("EyeCollectible: GlobalManager not found in scene!");
         }
     }
 
     void Reset()
     {
-        // Make collider a trigger automatically
+        // Ensure pickup is a trigger
         var col = GetComponent<Collider>();
         if (col) col.isTrigger = true;
 
-        // If this object has a Rigidbody, make it kinematic for stable triggers
+        // Stable triggers if you keep a Rigidbody on the eye
         var rb = GetComponent<Rigidbody>();
         if (rb) rb.isKinematic = true;
     }
@@ -35,22 +35,34 @@ public class EyeCollectible : MonoBehaviour
     void OnTriggerEnter(Collider other)
     {
         if (picked) return;
-        if (!other.CompareTag(playerTag)) return;
 
-        // Mark as collected first to prevent double-count
-        picked = true;
+        // Handle cases where the player collider is on a child object
+        Transform t = other.transform;
+        bool isPlayer = false;
+        while (t != null)
+        {
+            if (t.CompareTag(playerTag)) { isPlayer = true; break; }
+            t = t.parent;
+        }
+        if (!isPlayer) return;
 
-        // >>> Increment eyeball count on the global manager <<<
+        picked = true; // guard first
+
+        // Update global counter
         if (globalManager != null)
         {
             globalManager.numEyeBalls++;
-            Debug.Log($"Eyeball picked up. Total: {globalManager.numEyeBalls}");
+            // Debug.Log($"Eyeball picked up. Total: {globalManager.numEyeBalls}");
         }
 
         // Update HUD
         if (EyeLevelManager.Instance) EyeLevelManager.Instance.OnCollectedOne();
 
-        // Remove the eye from the scene
+        // Ask the player's controller to play the 3s cry (if present)
+        var mover = other.GetComponentInParent<EyeBallMove>();
+        if (mover) mover.PlayCollectCry();
+
+        // Remove the eye
         Destroy(gameObject);
     }
 }

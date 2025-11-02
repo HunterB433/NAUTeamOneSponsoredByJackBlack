@@ -2,6 +2,7 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using System.Collections;
 using System.Collections.Generic;
+using TMPro; // Needed for TMP_Text
 
 public class CircleMover : MonoBehaviour
 {
@@ -22,6 +23,10 @@ public class CircleMover : MonoBehaviour
     [Tooltip("Speed of ingredient movement")]
     public float moveSpeed = 3f;
 
+    [Header("UI Display")]
+    [Tooltip("Text object that displays the current Mix Score")]
+    public TMP_Text mixScoreText;  // <-- New text variable
+
     private float angle;
     private int currentIndex = 0;
     private bool isMoving = false;
@@ -34,12 +39,13 @@ public class CircleMover : MonoBehaviour
     {
         frozenX = transform.position.x;
 
-        // Find the GlobalManager (it should be tagged "GlobalManager")
         gm = FindFirstObjectByType<GlobalManager>();
         if (gm == null)
         {
             Debug.LogError("GlobalManager not found in scene!");
         }
+
+        UpdateMixScoreUI();
     }
 
     void Update()
@@ -58,7 +64,6 @@ public class CircleMover : MonoBehaviour
         {
             clickCount++;
 
-            // Distance and score logic
             if (targetObject != null)
             {
                 Vector2 orbPos = new Vector2(orbitingObject.position.y, orbitingObject.position.z);
@@ -67,17 +72,17 @@ public class CircleMover : MonoBehaviour
                 float maxDistance = radius * 2f;
                 float percent = Mathf.Clamp01(1f - (distance / maxDistance)) * 100f;
 
-                // Multiply by mixScore from GlobalManager
                 if (gm != null)
                 {
-                    gm.mixScore *= (percent/100);
+                    gm.mixScore *= (percent / 100f);
+                    UpdateMixScoreUI();
                 }
 
                 Debug.Log($"Distance: {distance:F3} | Weighted Score: {percent:F1}% | Speed: {speed:F1}");
                 speed *= speedIncreaseFactor;
             }
 
-            // Ingredient movement logic (XYZ allowed)
+            // Ingredient movement logic
             if (!isMoving && currentIndex < ingredients.Count && pot != null)
             {
                 StartCoroutine(MoveIngredient(ingredients[currentIndex]));
@@ -93,6 +98,14 @@ public class CircleMover : MonoBehaviour
             {
                 StartCoroutine(FinishMix());
             }
+        }
+    }
+
+    private void UpdateMixScoreUI()
+    {
+        if (mixScoreText != null && gm != null)
+        {
+            mixScoreText.text = $"Mix Score: {(gm.mixScore * 100f):0.00}%";
         }
     }
 

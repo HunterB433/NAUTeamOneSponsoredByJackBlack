@@ -1,4 +1,5 @@
 using UnityEngine;
+using TMPro;
 
 public class Tomato : MonoBehaviour
 {
@@ -8,6 +9,10 @@ public class Tomato : MonoBehaviour
     public float startX = 0.333f;
     public float endX = -1f;
 
+    [Header("UI Display")]
+    [Tooltip("Text object that displays the number of tomatoes hit")]
+    public TMP_Text tomatoHitText;  // <-- New inspector variable
+
     private enum State { Up, Across, Down, Done }
     private State currentState = State.Up;
     private Vector3 targetPos;
@@ -16,7 +21,7 @@ public class Tomato : MonoBehaviour
 
     void Start()
     {
-        // Find the global manager (DontDestroyOnLoad)
+        // Find the GlobalManager
         globalManager = FindFirstObjectByType<GlobalManager>();
         if (globalManager == null)
         {
@@ -26,6 +31,8 @@ public class Tomato : MonoBehaviour
         // Start position (Y = 0)
         transform.position = new Vector3(startX, 0f, transform.position.z);
         targetPos = new Vector3(startX, 0.5f, transform.position.z);
+
+        UpdateTomatoHitUI();
     }
 
     void Update()
@@ -74,13 +81,21 @@ public class Tomato : MonoBehaviour
 
     void OnMouseDown()
     {
-        // Triggered when player clicks this tomato (requires collider)
         if (globalManager != null)
         {
             globalManager.numTomatosHit++;
             Debug.Log($"Tomato hit! Total hits: {globalManager.numTomatosHit}");
+            UpdateTomatoHitUI();
         }
 
         Destroy(gameObject);
+    }
+
+    private void UpdateTomatoHitUI()
+    {
+        if (tomatoHitText != null && globalManager != null)
+        {
+            tomatoHitText.text = $"Tomatoes Hit: {globalManager.numTomatosHit}";
+        }
     }
 }

@@ -3,6 +3,9 @@ using System.Collections.Generic;
 
 public class DetectionZone : MonoBehaviour
 {
+    private bool wormInZone = false;
+    private Collider savedOther;
+    public WormMove wormMove;
     [SerializeReference]
     public List<WormMove> wormsInZone = new List<WormMove>();
 
@@ -10,7 +13,10 @@ public class DetectionZone : MonoBehaviour
 
     void Start()
     {
-        // Find the global manager in the scene (it’s marked as DontDestroyOnLoad)
+
+        audioSource = GetComponent<AudioSource>();
+
+        // Find the global manager in the scene (its marked as DontDestroyOnLoad)
         globalManager = FindFirstObjectByType<GlobalManager>();
         if (globalManager == null)
         {
