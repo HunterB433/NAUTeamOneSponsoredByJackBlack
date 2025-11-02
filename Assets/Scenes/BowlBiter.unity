@@ -679,8 +679,8 @@ AudioSource:
   m_audioClip: {fileID: 0}
   m_Resource: {fileID: 8300000, guid: 205287722f2b6b64583b86d65fdeeb11, type: 3}
   m_PlayOnAwake: 1
-  m_Volume: 0.74
-  m_Pitch: 1
+  m_Volume: 0
+  m_Pitch: 2.37
   Loop: 1
   Mute: 0
   Spatialize: 0
@@ -689,7 +689,7 @@ AudioSource:
   DopplerLevel: 1
   MinDistance: 1
   MaxDistance: 500
-  Pan2D: 0
+  Pan2D: 0.35
   rolloffMode: 0
   BypassEffects: 0
   BypassListenerEffects: 0
@@ -2336,7 +2336,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5ec488f4e8f95224797ee78d85542544, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::BowlTimer
-  levelDuration: 45
+  levelDuration: 60
   targetBool: completedBowl
   timerText: {fileID: 1624441296}
 --- !u!114 &1624441296 stripped
