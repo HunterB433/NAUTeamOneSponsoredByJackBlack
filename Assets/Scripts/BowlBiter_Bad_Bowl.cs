@@ -6,6 +6,11 @@ public class ClickMoveShakeBounce : MonoBehaviour
     public Vector3 targetPosition = new Vector3(122.9f, 64.3f, 119.4f);
     public float moveSpeed = 2f;
 
+    [Header("Shake Audio")]
+    public AudioClip shakeClip;           // optional; if null uses AudioSource.clip
+    public bool loopWhileShaking = true;  // continuous vs one-shot
+    AudioSource audioSrc;
+
     // ----- SHAKE SETTINGS -----
     public float shakeAmount = 5f;
     public float shakeSpeed = 0.05f;
@@ -38,6 +43,7 @@ public class ClickMoveShakeBounce : MonoBehaviour
 
     void Start()
     {
+        
         mainCam = Camera.main;
         originalRotation = transform.rotation;
 
@@ -51,6 +57,13 @@ public class ClickMoveShakeBounce : MonoBehaviour
 
         // randomize first shake
         shakeCooldown = Random.Range(1f, shakeInterval);
+        audioSrc = GetComponent<AudioSource>();
+        if (!audioSrc) audioSrc = gameObject.AddComponent<AudioSource>();
+
+        audioSrc.playOnAwake = false;
+        if (shakeClip) audioSrc.clip = shakeClip;
+        audioSrc.loop = loopWhileShaking;
+
 
         // find global manager
         globalManager = FindFirstObjectByType<GlobalManager>();
@@ -126,6 +139,21 @@ public class ClickMoveShakeBounce : MonoBehaviour
     {
         isShaking = true;
         shakeTimer = Random.Range(minShakeDuration, maxShakeDuration);
+        // ---- start sound ----
+        if (audioSrc)
+        {
+            if (loopWhileShaking)
+            {
+                // continuous sound while shaking
+                if (!audioSrc.isPlaying) audioSrc.Play();
+            }
+            else
+            {
+                // one tick per shake
+                if (shakeClip) audioSrc.PlayOneShot(shakeClip);
+                else if (audioSrc.clip) audioSrc.PlayOneShot(audioSrc.clip);
+            }
+        }
     }
 
     void ShakeObject()
@@ -141,6 +169,8 @@ public class ClickMoveShakeBounce : MonoBehaviour
         {
             isShaking = false;
             transform.rotation = originalRotation;
+
+            if (audioSrc && loopWhileShaking) audioSrc.Stop();
         }
     }
 
