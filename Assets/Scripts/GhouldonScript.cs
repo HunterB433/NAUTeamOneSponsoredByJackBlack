@@ -89,7 +89,7 @@ public class GhouldonTextManager : MonoBehaviour
         if (numEyeBalls <= 3) return "(On the Eye-MeatBalls) What is this monstrosity? It's raw, there arent enough eye-meatballs! you blind mole!";
         if (numEyeBalls <= 5) return "(On the Eye-MeatBalls) Barely passable. Did you even look at the recipe? Have you even cooked with human flesh before?";
         if (numEyeBalls <= 7) return "(On the Eye-MeatBalls) Not bad, an alright amount of eye-meatballs. but it's still a bit of a horror show.";
-        return "(On the Eye-MeatBalls) Finally! A dish that doesn’t make me lose faith in humanity An excelent ammount of eye-meatballs! Delicous!";
+        return "(On the Eye-MeatBalls) Finally! A dish that doesn’t make me lose faith in humanity An excellent amount of eye-meatballs! Delicous!";
     }
 
     private string GetBowlReaction(int numFails)
@@ -104,7 +104,7 @@ public class GhouldonTextManager : MonoBehaviour
         float cutPercent = (numWorms == 0) ? 0 : (float)numWormsCut / numWorms;
         if (cutPercent < 0.3f) return "(On the Worm-Noodles) Pathetic! The worms are laughing at you! You are supposed to cut them into noodles you donkey!";
         if (cutPercent < 0.5f) return "(On the Worm-Noodles) Come on, slice faster than that! It’s like watching paint dry! Cut more worm noodles!";
-        if (cutPercent < 0.7f) return "(On the Worm-Noodles) Not bad, but those worms still have attitude. Maybe be more accurate next time";
+        if (cutPercent < 0.7f) return "(On the Worm-Noodles) Not bad, but those worms still have attitude. Be more accurate next time!";
         return "(On the Worm-Noodles) Excellent! You’ve shown those worms who’s the final boss!";
     }
 

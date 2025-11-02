@@ -43,30 +43,43 @@ using UnityEngine;
 
 public class WormMove : MonoBehaviour
 {
+    [Header("Movement Settings")]
     public float speed = 1.0f;
-    public float speedMultiplier = 1.1f; // How much to increase speed by each reset
+    public float speedIncreaseFactor = 1.1f;
+    public Vector2 randomSpeedRange = new Vector2(0.75f, 1.25f); // random range for speed
+
+    [Header("Movement Points")]
     public Vector3 pointA;
     public Vector3 pointB;
 
-    private bool movingToB = true;
+    private float moveTimer;
 
     void Start()
     {
+        // Define movement endpoints
         pointA = transform.position;
-        pointB = transform.position + new Vector3(1.4f, 0f, 0f);
+        pointB = transform.position + new Vector3(3.5f, 0f, 0f);
+
+        // Randomize initial speed
+        speed = Random.Range(randomSpeedRange.x, randomSpeedRange.y);
     }
 
     void Update()
     {
-        float time = Mathf.PingPong(Time.time * speed, 1);
-        transform.position = Vector3.Lerp(pointA, pointB, time);
+        moveTimer += Time.deltaTime * speed;
+        float t = Mathf.PingPong(moveTimer, 1f);
+        transform.position = Vector3.Lerp(pointA, pointB, t);
     }
 
-    // Called when clicked while inside detection zone
-    public void ResetToPointA()
+    // Called externally (e.g., from DetectionZone)
+    public void ResetAndIncreaseSpeed()
     {
+        // Reset position and timer
         transform.position = pointA;
-        speed *= speedMultiplier;
-        Debug.Log(name + " reset to pointA. New speed: " + speed);
+        moveTimer = 0f;
+
+        // Randomize speed again within range, then apply increase factor
+        float randomBaseSpeed = Random.Range(randomSpeedRange.x, randomSpeedRange.y);
+        speed = randomBaseSpeed * speedIncreaseFactor;
     }
 }
