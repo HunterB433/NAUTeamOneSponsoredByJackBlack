@@ -9,29 +9,32 @@ public class ClickMoveShakeBounce : MonoBehaviour
     // ----- SHAKE SETTINGS -----
     public float shakeAmount = 5f;
     public float shakeSpeed = 0.05f;
-    public float minShakeDuration = 0.2f; // new min
-    public float maxShakeDuration = 0.6f; // new max
-    public float shakeInterval = 3f; // time between shakes
+    public float minShakeDuration = 0.2f;
+    public float maxShakeDuration = 0.6f;
+    public float shakeInterval = 3f;
 
     float shakeTimer = 0f;
     float shakeCooldown = 0f;
     bool isShaking = false;
     Quaternion originalRotation;
 
-    // ----- ROOM BOUNDS (XZ only) -----
+    // ----- ROOM BOUNDS -----
     public float minX = 100f;
     public float maxX = 150f;
     public float minZ = 100f;
     public float maxZ = 150f;
-    public float groundY = 64f; // height to stay at while bouncing
+    public float groundY = 64f;
 
-    // ----- BOUNCING SETTINGS -----
+    // ----- BOUNCING -----
     public float bounceSpeed = 3f;
     private Vector3 bounceDirection;
 
-    // ----- INTERNAL VARIABLES -----
+    // ----- INTERNAL -----
     Camera mainCam;
     bool moveNow = false;
+
+    // ----- GLOBAL MANAGER -----
+    private GlobalManager globalManager;
 
     void Start()
     {
@@ -41,13 +44,20 @@ public class ClickMoveShakeBounce : MonoBehaviour
         // random bounce direction (XZ only)
         bounceDirection = new Vector3(Random.Range(-1f, 1f), 0f, Random.Range(-1f, 1f)).normalized;
 
-        // set to ground height
+        // keep at ground height
         Vector3 pos = transform.position;
         pos.y = groundY;
         transform.position = pos;
 
         // randomize first shake
         shakeCooldown = Random.Range(1f, shakeInterval);
+
+        // find global manager
+        globalManager = FindFirstObjectByType<GlobalManager>();
+        if (globalManager == null)
+        {
+            Debug.LogWarning("GlobalManager not found in scene!");
+        }
     }
 
     void Update()
@@ -73,6 +83,13 @@ public class ClickMoveShakeBounce : MonoBehaviour
                 if (hit.transform == transform)
                 {
                     moveNow = true;
+
+                    // increment numFails here
+                    if (globalManager != null)
+                    {
+                        globalManager.numFails++;
+                        Debug.Log($"Fail triggered! Total fails: {globalManager.numFails}");
+                    }
                 }
             }
         }
@@ -108,7 +125,7 @@ public class ClickMoveShakeBounce : MonoBehaviour
     void StartShake()
     {
         isShaking = true;
-        shakeTimer = Random.Range(minShakeDuration, maxShakeDuration); // 🎲 randomized each shake
+        shakeTimer = Random.Range(minShakeDuration, maxShakeDuration);
     }
 
     void ShakeObject()

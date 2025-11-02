@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 [RequireComponent(typeof(Rigidbody))]
 public class EyeBallMove : MonoBehaviour
@@ -15,7 +16,14 @@ public class EyeBallMove : MonoBehaviour
     [Header("Camera (optional)")]
     public Transform cameraTransform;   // drag your camera here; falls back to Camera.main
 
-    Rigidbody rb;
+    [Header("Fall-Off (Y threshold)")]
+    [Tooltip("If the eyeball's world Y is less than this value, we consider it 'fallen' and switch scenes.")]
+    public float fallYThreshold = -2f;
+    [SerializeField] private string kitchenSceneName = "KitchenScene";
+
+    private Rigidbody rb;
+    private GlobalManager globalManager;
+    private bool transitioning = false;
 
     void Awake()
     {
@@ -30,11 +38,24 @@ public class EyeBallMove : MonoBehaviour
             if (cam) cameraTransform = cam.transform;
             else Debug.LogWarning("EyeBallMove: No camera assigned and no MainCamera found. Using world-space controls.");
         }
+
+        globalManager = FindFirstObjectByType<GlobalManager>();
+        if (!globalManager)
+        {
+            Debug.LogWarning("EyeBallMove: GlobalManager not found. Eye count persists only if your manager exists and is DontDestroyOnLoad.");
+        }
     }
 
     void Update()
     {
+        // Spin for visuals
         transform.Rotate(0f, spinSpeed * Time.deltaTime, 0f, Space.Self);
+
+        // Simple Y-based fall check (world space)
+        if (!transitioning && transform.position.y < fallYThreshold)
+        {
+            TransitionToKitchen();
+        }
     }
 
     void FixedUpdate()
@@ -55,7 +76,7 @@ public class EyeBallMove : MonoBehaviour
         if (moveDir.sqrMagnitude > 1f) moveDir.Normalize();
 
         // Drive XZ, keep current Y
-        Vector3 v = rb.linearVelocity;
+        Vector3 v = rb.linearVelocity;                 // <— use velocity (not linearVelocity)
         Vector3 desired = moveDir * speed;
         rb.linearVelocity = new Vector3(desired.x, v.y, desired.z);
 
@@ -66,4 +87,24 @@ public class EyeBallMove : MonoBehaviour
             rb.AddForce(extraGravity, ForceMode.Acceleration);
         }
     }
+
+    private void TransitionToKitchen()
+    {
+        transitioning = true;
+
+        int savedCount = globalManager ? globalManager.numEyeBalls : -1;
+        Debug.Log($"Eyeball fell below {fallYThreshold}. Saving eyes={savedCount} and loading '{kitchenSceneName}'.");
+
+        SceneManager.LoadScene(kitchenSceneName);
+    }
+
+#if UNITY_EDITOR
+    void OnDrawGizmosSelected()
+    {
+        // Draw a thin gizmo line at the fall Y to help tune it
+        Gizmos.color = Color.red;
+        Vector3 c = new Vector3(transform.position.x, fallYThreshold, transform.position.z);
+        Gizmos.DrawLine(c + Vector3.left * 100f, c + Vector3.right * 100f);
+    }
+#endif
 }

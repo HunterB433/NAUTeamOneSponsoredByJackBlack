@@ -1937,10 +1937,10 @@ PrefabInstance:
       propertyPath: targetBool
       value: completedTomatos
       objectReference: {fileID: 0}
-    - target: {fileID: 6974963039277554681, guid: 6da9eee7efa1c5642a68ae1f96bdef4b,
+    - target: {fileID: 4929694824769101785, guid: 6da9eee7efa1c5642a68ae1f96bdef4b,
         type: 3}
-      propertyPath: m_PresetInfoIsWorld
-      value: 0
+      propertyPath: levelDuration
+      value: 45
       objectReference: {fileID: 0}
     - target: {fileID: 7617297995886820227, guid: 6da9eee7efa1c5642a68ae1f96bdef4b,
         type: 3}

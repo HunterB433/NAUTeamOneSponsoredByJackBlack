@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using TMPro;
 
 public class EyeLevelManager : MonoBehaviour
@@ -7,7 +8,7 @@ public class EyeLevelManager : MonoBehaviour
     public static EyeLevelManager Instance { get; private set; }
 
     [Header("Timer")]
-    public float levelDuration = 60f;       // seconds
+    public float levelDuration = 60f; // seconds
     private float timeLeft;
 
     [Header("Counts")]
@@ -20,6 +21,10 @@ public class EyeLevelManager : MonoBehaviour
     public TMP_Text countText;              // drag TMP text
     public TMP_Text timerText;              // drag TMP text
 
+    // Add references/guards
+    private GlobalManager globalManager;
+    private bool levelEnded = false;
+
     void Awake()
     {
         Instance = this; // scene-scoped
@@ -27,6 +32,13 @@ public class EyeLevelManager : MonoBehaviour
 
     void Start()
     {
+        // Cache GlobalManager (DontDestroyOnLoad)
+        globalManager = FindFirstObjectByType<GlobalManager>();
+        if (globalManager == null)
+        {
+            Debug.LogWarning("GlobalManager not found in scene!");
+        }
+
         // Count all pickups at start
         totalInScene = GameObject.FindGameObjectsWithTag(pickupTag).Length;
         collected = 0;
@@ -36,21 +48,25 @@ public class EyeLevelManager : MonoBehaviour
 
     void Update()
     {
-        if (timeLeft <= 0f) return;
+        if (levelEnded) return;
 
         timeLeft -= Time.deltaTime;
-        if (timeLeft < 0f) timeLeft = 0f;
-        UpdateUI();
+        if (timeLeft <= 0f)
+        {
+            timeLeft = 0f;
+            UpdateUI();
+            EndLevel();
+            return;
+        }
 
-        // If you want to end when time hits zero, you can check here.
-        // if (timeLeft <= 0f) Debug.Log("Time up!");
+        UpdateUI();
     }
 
     public void OnCollectedOne()
     {
+        if (levelEnded) return;
         collected++;
         UpdateUI();
-        // if (collected >= totalInScene) Debug.Log("All eyes collected!");
     }
 
     private void UpdateUI()
@@ -64,5 +80,22 @@ public class EyeLevelManager : MonoBehaviour
             int s = sec % 60;
             timerText.text = $"{m:00}:{s:00}";
         }
+    }
+
+    private void EndLevel()
+    {
+        if (levelEnded) return;
+        levelEnded = true;
+
+        // Mark completion on the global manager
+        if (globalManager != null)
+        {
+            globalManager.completedMeatball = true;
+            Debug.Log("Level time reached 0. Set completedMeatball = true.");
+        }
+
+        // Load the next scene
+        Debug.Log("Loading KitchenScene...");
+        SceneManager.LoadScene("KitchenScene");
     }
 }
