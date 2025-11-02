@@ -1,17 +1,11 @@
-// using UnityEngine;
-
 using UnityEngine;
+using System.Collections.Generic;
 
 public class DetectionZone : MonoBehaviour
 {
-<<<<<<< Updated upstream
     private bool wormInZone = false;
     private Collider savedOther;
     public WormMove wormMove;
-=======
-
-    private AudioSource audioSource;
-
     [SerializeReference]
     public List<WormMove> wormsInZone = new List<WormMove>();
 
@@ -22,40 +16,42 @@ public class DetectionZone : MonoBehaviour
 
         audioSource = GetComponent<AudioSource>();
 
-        // Find the global manager in the scene (it�s marked as DontDestroyOnLoad)
+        // Find the global manager in the scene (its marked as DontDestroyOnLoad)
         globalManager = FindFirstObjectByType<GlobalManager>();
         if (globalManager == null)
         {
             Debug.LogWarning("[DetectionZone] GlobalManager not found in scene!");
         }
     }
->>>>>>> Stashed changes
 
     private void OnTriggerEnter(Collider other)
     {
-        Debug.Log(other.name + " entered the detection zone!");
-        savedOther = other;
-        wormInZone = true;
+        WormMove worm = other.GetComponent<WormMove>();
+        if (worm != null && !wormsInZone.Contains(worm))
+        {
+            wormsInZone.Add(worm);
+        }
+    }
+
+    private void OnTriggerExit(Collider other)
+    {
+        WormMove worm = other.GetComponent<WormMove>();
+        if (worm != null && wormsInZone.Contains(worm))
+        {
+            wormsInZone.Remove(worm);
+        }
     }
 
     private void Update()
     {
-        if (wormInZone && Input.GetMouseButtonDown(0))
+        if (Input.GetMouseButtonDown(0)) // Left click
         {
-            if (wormMove != null)
-                wormMove.speed = 0.0f;
-            Debug.Log(savedOther.name + " entered the detection zone!");
+            HandleWormClick();
         }
     }
-<<<<<<< Updated upstream
-}
-=======
 
     private void HandleWormClick()
     {
-
-        audioSource.Play();
-
         if (wormsInZone.Count == 0 || globalManager == null)
             return;
 
@@ -75,4 +71,3 @@ public class DetectionZone : MonoBehaviour
         }
     }
 }
->>>>>>> Stashed changes
