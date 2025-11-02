@@ -8,6 +8,8 @@ TagManager:
   - Worm
   - InteractPoint
   - Bag
+  - EyeCollect
+  - Coffin
   layers:
   - Default
   - TransparentFX

@@ -3,11 +3,23 @@ using UnityEngine;
 [RequireComponent(typeof(Collider))]
 public class EyeCollectible : MonoBehaviour
 {
-    // Use your player tag
     [SerializeField] private string playerTag = "MainEyeball";
 
     // Safety: prevent double-collect
     private bool picked = false;
+
+    // Reference to your GlobalManager (DontDestroyOnLoad)
+    private GlobalManager globalManager;
+
+    void Awake()
+    {
+        // Cache the global manager once
+        globalManager = FindFirstObjectByType<GlobalManager>();
+        if (globalManager == null)
+        {
+            Debug.LogWarning("GlobalManager not found in scene!");
+        }
+    }
 
     void Reset()
     {
@@ -25,7 +37,15 @@ public class EyeCollectible : MonoBehaviour
         if (picked) return;
         if (!other.CompareTag(playerTag)) return;
 
+        // Mark as collected first to prevent double-count
         picked = true;
+
+        // >>> Increment eyeball count on the global manager <<<
+        if (globalManager != null)
+        {
+            globalManager.numEyeBalls++;
+            Debug.Log($"Eyeball picked up. Total: {globalManager.numEyeBalls}");
+        }
 
         // Update HUD
         if (EyeLevelManager.Instance) EyeLevelManager.Instance.OnCollectedOne();
