@@ -114,12 +114,11 @@ MonoBehaviour:
   shakeAmount: 5
   shakeSpeed: 0.05
   shakeDuration: 2
-  leftWall: 70
-  rightWall: 159
-  backWall: 65
-  frontWall: 106
-  bottomWall: 45
-  topWall: 45.1
+  minX: 100
+  maxX: 150
+  minZ: 65
+  maxZ: 100
+  fixedY: 45
   bounceSpeed: 3
 --- !u!65 &867773553580551347
 BoxCollider:
