@@ -6,14 +6,15 @@ public class HoverMove : MonoBehaviour
     public float moveSpeed = 5f;
     public float hoverHeight = 1.5f;
     public float hoverSmooth = 5f;
+    public float rotationSpeed = 10f;
 
     [Header("Movement Bounds (XZ)")]
-    public Vector2 topLeft = new Vector2(-10f, 10f);
-    public Vector2 bottomRight = new Vector2(10f, -10f);
+    public Vector2 bottomRight = new Vector2(-10f, 10f);
+    public Vector2 topLeft = new Vector2(10f, -10f);
 
     void Start()
     {
-        // If a Rigidbody exists, disable all physics behavior
+        // Disable physics if Rigidbody exists
         Rigidbody rb = GetComponent<Rigidbody>();
         if (rb != null)
         {
@@ -24,17 +25,39 @@ public class HoverMove : MonoBehaviour
 
     void Update()
     {
-        // WASD input
-        float h = Input.GetAxis("Horizontal");
-        float v = Input.GetAxis("Vertical");
+        Vector3 move = Vector3.zero;
+        float targetYRot = transform.eulerAngles.y;
 
-        // Calculate movement direction
-        Vector3 move = new Vector3(h, 0f, v).normalized * moveSpeed;
+        // Remapped controls
+        if (Input.GetKey(KeyCode.W))
+        {
+            move = Vector3.right * moveSpeed;
+            targetYRot = 90f;
+        }
+        else if (Input.GetKey(KeyCode.D))
+        {
+            move = Vector3.back * moveSpeed;
+            targetYRot = 180f;
+        }
+        else if (Input.GetKey(KeyCode.S))
+        {
+            move = Vector3.left * moveSpeed;
+            targetYRot = 270f;
+        }
+        else if (Input.GetKey(KeyCode.A))
+        {
+            move = Vector3.forward * moveSpeed;
+            targetYRot = 0f;
+        }
 
-        // Apply movement
+        // Apply movement (frame-rate independent)
         transform.position += move * Time.deltaTime;
 
-        // Clamp position to XZ boundaries
+        // Smooth rotation toward target direction
+        Quaternion targetRot = Quaternion.Euler(0f, targetYRot, 0f);
+        transform.rotation = Quaternion.Lerp(transform.rotation, targetRot, Time.deltaTime * rotationSpeed);
+
+        // Clamp position within bounds
         float clampedX = Mathf.Clamp(transform.position.x, topLeft.x, bottomRight.x);
         float clampedZ = Mathf.Clamp(transform.position.z, bottomRight.y, topLeft.y);
         transform.position = new Vector3(clampedX, transform.position.y, clampedZ);
@@ -49,8 +72,17 @@ public class HoverMove : MonoBehaviour
         }
         else
         {
-            // If no ground found, just keep at hoverHeight
             transform.position = new Vector3(transform.position.x, hoverHeight, transform.position.z);
         }
     }
+
+    // for seeing interaction points
+    void OnTriggerEnter(Collider other)
+    {
+        if (other.CompareTag("InteractPoint"))
+        {
+            Debug.Log("InteractPoint entered trigger: " + other.name);
+        }
+    }
+
 }
