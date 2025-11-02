@@ -3,27 +3,49 @@ using UnityEngine;
 [RequireComponent(typeof(Collider))]
 public class EyeCollectible : MonoBehaviour
 {
-    public float rotateSpeed = 90f;             // spins on Y
-    public string playerTag = "MainEyeball";    // the eyeball's tag
+    [Tooltip("Leave empty to use EyeLevelManager.playerTag")]
+    public string playerTagOverride;
 
-    void Reset()
-    {
-        GetComponent<Collider>().isTrigger = true;
-        gameObject.tag = "EyeCollect";
-    }
+    [Header("VFX / SFX (optional)")]
+    public GameObject pickupVfx;   // small particle burst prefab
+    public AudioClip pickupSfx;
+    public float sfxVolume = 0.8f;
 
-    void Update()
+    Collider col;
+    bool collected = false;
+
+    void Awake()
     {
-        transform.Rotate(0f, rotateSpeed * Time.deltaTime, 0f, Space.Self);
+        col = GetComponent<Collider>();
+        // Make sure this collider is a trigger
+        col.isTrigger = true;
+
+        // If there is a Rigidbody on this object, make it kinematic for stable triggers
+        var rb = GetComponent<Rigidbody>();
+        if (rb) rb.isKinematic = true;
     }
 
     void OnTriggerEnter(Collider other)
     {
+        if (collected) return;
+
+        // Who counts as the player?
+        string playerTag = string.IsNullOrEmpty(playerTagOverride)
+            ? (EyeLevelManager.Instance ? EyeLevelManager.Instance.playerTag : "MainEyeball")
+            : playerTagOverride;
+
         if (!other.CompareTag(playerTag)) return;
 
-        // Tell the manager we collected one
+        collected = true;
+
+        // Notify the level manager
         if (EyeLevelManager.Instance) EyeLevelManager.Instance.OnCollectedOne();
 
-        Destroy(gameObject);
+        // Optional feedback
+        if (pickupVfx) Instantiate(pickupVfx, transform.position, Quaternion.identity);
+        if (pickupSfx) AudioSource.PlayClipAtPoint(pickupSfx, transform.position, sfxVolume);
+
+        // Hide / remove the collectible
+        Destroy(gameObject);   // or: Destroy(gameObject);
     }
 }

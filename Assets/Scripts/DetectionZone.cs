@@ -15,15 +15,15 @@ public class DetectionZone : MonoBehaviour
         wormInZone = false;
     }
 
-    private void Update()
-    {
-        if (somethingInZone && Input.GetMouseButtonDown(0))
-        {
-            if (wormMove != null)
-                wormMove.speed = 0.0f;
-                Debug.Log(other.name + " entered the detection zone!");
-        }
-    }
+    // private void Update()
+    // {
+    //     if (somethingInZone && Input.GetMouseButtonDown(0))
+    //     {
+    //         if (wormMove != null)
+    //             wormMove.speed = 0.0f;
+    //             Debug.Log(other.name + " entered the detection zone!");
+    //     }
+    // }
 
     // private void OnTriggerExit(Collider other)
     // {

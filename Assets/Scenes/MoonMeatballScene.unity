@@ -165,8 +165,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a54cf913890bddf469c4a188fd09b5fd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: '::'
-  rotateSpeed: 90
-  playerTag: MainEyeball
+  playerTagOverride: 
+  pickupVfx: {fileID: 0}
+  pickupSfx: {fileID: 0}
+  sfxVolume: 0.8
 --- !u!64 &58093647
 MeshCollider:
   m_ObjectHideFlags: 0
@@ -533,8 +535,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a54cf913890bddf469c4a188fd09b5fd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: '::'
-  rotateSpeed: 90
-  playerTag: MainEyeball
+  playerTagOverride: 
+  pickupVfx: {fileID: 0}
+  pickupSfx: {fileID: 0}
+  sfxVolume: 0.8
 --- !u!64 &213190494
 MeshCollider:
   m_ObjectHideFlags: 0
@@ -1721,8 +1725,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a54cf913890bddf469c4a188fd09b5fd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: '::'
-  rotateSpeed: 90
-  playerTag: MainEyeball
+  playerTagOverride: 
+  pickupVfx: {fileID: 0}
+  pickupSfx: {fileID: 0}
+  sfxVolume: 0.8
 --- !u!64 &844525591
 MeshCollider:
   m_ObjectHideFlags: 0
@@ -1790,8 +1796,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a54cf913890bddf469c4a188fd09b5fd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: '::'
-  rotateSpeed: 90
-  playerTag: MainEyeball
+  playerTagOverride: 
+  pickupVfx: {fileID: 0}
+  pickupSfx: {fileID: 0}
+  sfxVolume: 0.8
 --- !u!64 &1108795098
 MeshCollider:
   m_ObjectHideFlags: 0
@@ -1859,8 +1867,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a54cf913890bddf469c4a188fd09b5fd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: '::'
-  rotateSpeed: 90
-  playerTag: MainEyeball
+  playerTagOverride: 
+  pickupVfx: {fileID: 0}
+  pickupSfx: {fileID: 0}
+  sfxVolume: 0.8
 --- !u!64 &1171766412
 MeshCollider:
   m_ObjectHideFlags: 0
@@ -1928,8 +1938,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a54cf913890bddf469c4a188fd09b5fd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: '::'
-  rotateSpeed: 90
-  playerTag: MainEyeball
+  playerTagOverride: 
+  pickupVfx: {fileID: 0}
+  pickupSfx: {fileID: 0}
+  sfxVolume: 0.8
 --- !u!64 &1185662288
 MeshCollider:
   m_ObjectHideFlags: 0
@@ -2146,8 +2158,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a54cf913890bddf469c4a188fd09b5fd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: '::'
-  rotateSpeed: 90
-  playerTag: MainEyeball
+  playerTagOverride: 
+  pickupVfx: {fileID: 0}
+  pickupSfx: {fileID: 0}
+  sfxVolume: 0.8
 --- !u!64 &1340537843
 MeshCollider:
   m_ObjectHideFlags: 0
@@ -2744,7 +2758,7 @@ SphereCollider:
     serializedVersion: 2
     m_Bits: 0
   m_LayerOverridePriority: 0
-  m_IsTrigger: 1
+  m_IsTrigger: 0
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
@@ -2855,8 +2869,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a54cf913890bddf469c4a188fd09b5fd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: '::'
-  rotateSpeed: 90
-  playerTag: MainEyeball
+  playerTagOverride: 
+  pickupVfx: {fileID: 0}
+  pickupSfx: {fileID: 0}
+  sfxVolume: 0.8
 --- !u!64 &1659453750
 MeshCollider:
   m_ObjectHideFlags: 0
@@ -3732,8 +3748,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a54cf913890bddf469c4a188fd09b5fd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: '::'
-  rotateSpeed: 90
-  playerTag: MainEyeball
+  playerTagOverride: 
+  pickupVfx: {fileID: 0}
+  pickupSfx: {fileID: 0}
+  sfxVolume: 0.8
 --- !u!64 &1975354730
 MeshCollider:
   m_ObjectHideFlags: 0
