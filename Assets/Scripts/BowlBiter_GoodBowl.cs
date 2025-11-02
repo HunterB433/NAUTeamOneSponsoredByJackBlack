@@ -1,4 +1,6 @@
 using UnityEngine;
+using TMPro;
+using UnityEngine.SceneManagement;
 
 public class ClickMoveBounce : MonoBehaviour
 {
@@ -74,6 +76,16 @@ public class ClickMoveBounce : MonoBehaviour
                     objectBScript.ActivateSequence();
                     Debug.Log("Triggered Object B!");
                 }
+
+                // ----- UPDATE GLOBAL VARIABLE -----
+                if (GlobalManager.Instance != null)
+                {
+                    GlobalManager.Instance.completedBowl = true;
+                    Debug.Log("completedBowl set to TRUE!");
+                }
+
+                // ----- SWITCH SCENE -----
+                SceneManager.LoadScene("KitchenScene");
             }
         }
 
