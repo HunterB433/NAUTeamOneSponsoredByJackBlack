@@ -29,5 +29,11 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/WormPasta.unity
     guid: 0ed147048c0c6403eb64fe97f90ead8f
+  - enabled: 1
+    path: Assets/Scenes/Win.unity
+    guid: 82c3b85733cf86a43a719662ed9ccf4a
+  - enabled: 1
+    path: Assets/Scenes/Lose.unity
+    guid: 0103bc8386c5e8740a438203cf046df8
   m_configObjects: {}
   m_UseUCBPForAssetBundles: 0
