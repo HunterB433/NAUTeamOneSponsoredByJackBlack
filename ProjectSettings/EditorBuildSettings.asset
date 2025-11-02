@@ -5,11 +5,26 @@ EditorBuildSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 2
   m_Scenes:
-  - enabled: 0
-    path: Assets/_3DStealthGame/Tutorial_Demo/Demo_Scenes/MainMenu.unity
-    guid: e0afa25d30aeb924895fa68e23be7af2
+  - enabled: 1
+    path: Assets/Scenes/KitchenScene.unity
+    guid: 49d294c75e8ba0d45843d6c92cb162b1
   - enabled: 1
     path: Assets/Scenes/PlaceFoodTogether.unity
     guid: a4d360c9370c72d45a03d04210800d3f
+  - enabled: 1
+    path: Assets/Scenes/Gordon.unity
+    guid: 8a478d03235cef147b11e349f9566cd8
+  - enabled: 1
+    path: Assets/Scenes/BowlBiter.unity
+    guid: 61d4d80322da7884487a2e5067e94a78
+  - enabled: 1
+    path: Assets/Scenes/MoonMeatballScene.unity
+    guid: 6ff8490433854bf4199eb6d8a03e2331
+  - enabled: 1
+    path: Assets/Scenes/Tomotos.unity
+    guid: 451370e14841f1a40b70cce139570a29
+  - enabled: 1
+    path: Assets/Scenes/WormPasta.unity
+    guid: 0ed147048c0c6403eb64fe97f90ead8f
   m_configObjects: {}
   m_UseUCBPForAssetBundles: 0
