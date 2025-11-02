@@ -13,6 +13,7 @@ GameObject:
   - component: {fileID: 7692796691032540661}
   - component: {fileID: 4628975966150752573}
   - component: {fileID: 7503571488020618413}
+  - component: {fileID: 1918888266496312772}
   m_Layer: 0
   m_Name: Line
   m_TagString: InteractPoint
@@ -141,6 +142,19 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 0
   m_CollisionDetection: 0
+--- !u!114 &1918888266496312772
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1437711916397742829}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 77a797400e8c98d43a7b640ae4fe803f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::SceneSwitcher
+  sceneName: 
 --- !u!1 &1627094794368300152
 GameObject:
   m_ObjectHideFlags: 0
