@@ -3,49 +3,54 @@ using UnityEngine;
 [RequireComponent(typeof(Collider))]
 public class EyeCollectible : MonoBehaviour
 {
-    [Tooltip("Leave empty to use EyeLevelManager.playerTag")]
-    public string playerTagOverride;
+    [SerializeField] private string playerTag = "MainEyeball";
 
-    [Header("VFX / SFX (optional)")]
-    public GameObject pickupVfx;   // small particle burst prefab
-    public AudioClip pickupSfx;
-    public float sfxVolume = 0.8f;
+    // Safety: prevent double-collect
+    private bool picked = false;
 
-    Collider col;
-    bool collected = false;
+    // Reference to your GlobalManager (DontDestroyOnLoad)
+    private GlobalManager globalManager;
 
     void Awake()
     {
-        col = GetComponent<Collider>();
-        // Make sure this collider is a trigger
-        col.isTrigger = true;
+        // Cache the global manager once
+        globalManager = FindFirstObjectByType<GlobalManager>();
+        if (globalManager == null)
+        {
+            Debug.LogWarning("GlobalManager not found in scene!");
+        }
+    }
 
-        // If there is a Rigidbody on this object, make it kinematic for stable triggers
+    void Reset()
+    {
+        // Make collider a trigger automatically
+        var col = GetComponent<Collider>();
+        if (col) col.isTrigger = true;
+
+        // If this object has a Rigidbody, make it kinematic for stable triggers
         var rb = GetComponent<Rigidbody>();
         if (rb) rb.isKinematic = true;
     }
 
     void OnTriggerEnter(Collider other)
     {
-        if (collected) return;
-
-        // Who counts as the player?
-        string playerTag = string.IsNullOrEmpty(playerTagOverride)
-            ? (EyeLevelManager.Instance ? EyeLevelManager.Instance.playerTag : "MainEyeball")
-            : playerTagOverride;
-
+        if (picked) return;
         if (!other.CompareTag(playerTag)) return;
 
-        collected = true;
+        // Mark as collected first to prevent double-count
+        picked = true;
 
-        // Notify the level manager
+        // >>> Increment eyeball count on the global manager <<<
+        if (globalManager != null)
+        {
+            globalManager.numEyeBalls++;
+            Debug.Log($"Eyeball picked up. Total: {globalManager.numEyeBalls}");
+        }
+
+        // Update HUD
         if (EyeLevelManager.Instance) EyeLevelManager.Instance.OnCollectedOne();
 
-        // Optional feedback
-        if (pickupVfx) Instantiate(pickupVfx, transform.position, Quaternion.identity);
-        if (pickupSfx) AudioSource.PlayClipAtPoint(pickupSfx, transform.position, sfxVolume);
-
-        // Hide / remove the collectible
-        Destroy(gameObject);   // or: Destroy(gameObject);
+        // Remove the eye from the scene
+        Destroy(gameObject);
     }
 }

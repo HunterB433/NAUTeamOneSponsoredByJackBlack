@@ -23,11 +23,11 @@ public class GlobalManager : MonoBehaviour
 
     [Header("Hunter Tomatos")]
     public int numTomatos = 0;        // 0–100
+    public int numTomatosHit = 0;     // 0-100
     public bool completedTomatos = false;
 
     [Header("Hunter Mix")]
-    public float mixScore = 0f;       // 0–100
-    public float placementScore = 0f; // 0–100
+    public float mixScore = 1f;       // 0–1
     public bool completedMix = false;
 
     private void Awake()
@@ -59,10 +59,10 @@ public class GlobalManager : MonoBehaviour
         completedWorms = false;
 
         numTomatos = 0;
+        numTomatosHit = 0;
         completedTomatos = false;
 
         mixScore = 0f;
-        placementScore = 0f;
         completedMix = false;
     }
 

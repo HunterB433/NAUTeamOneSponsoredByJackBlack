@@ -1,27 +1,61 @@
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 [RequireComponent(typeof(Rigidbody))]
 public class EyeBallMove : MonoBehaviour
 {
     [Header("Movement")]
-    public float speed = 40f;          // XZ movement speed
+    public float speed = 40f;
 
     [Header("Extra Gravity")]
-    [Tooltip("1 = normal gravity. 2 = twice as strong, etc.")]
-    public float gravityScale = 1.5f;  // make gravity stronger
+    public float gravityScale = 1.5f;
 
     [Header("Visual Spin")]
-    [Tooltip("Degrees per second the eyeball spins around its own up axis.")]
-    public float spinSpeed = 360f;     // make the eyeball rotate faster
+    public float spinSpeed = 360f;
 
-    Rigidbody rb;
+    [Header("Camera (optional)")]
+    public Transform cameraTransform;   // drag your camera here; falls back to Camera.main
 
-    void Awake() => rb = GetComponent<Rigidbody>();
+    [Header("Fall-Off (Y threshold)")]
+    [Tooltip("If the eyeball's world Y is less than this value, we consider it 'fallen' and switch scenes.")]
+    public float fallYThreshold = -2f;
+    [SerializeField] private string kitchenSceneName = "KitchenScene";
+
+    private Rigidbody rb;
+    private GlobalManager globalManager;
+    private bool transitioning = false;
+
+    void Awake()
+    {
+        rb = GetComponent<Rigidbody>();
+    }
+
+    void Start()
+    {
+        if (!cameraTransform)
+        {
+            var cam = Camera.main;
+            if (cam) cameraTransform = cam.transform;
+            else Debug.LogWarning("EyeBallMove: No camera assigned and no MainCamera found. Using world-space controls.");
+        }
+
+        globalManager = FindFirstObjectByType<GlobalManager>();
+        if (!globalManager)
+        {
+            Debug.LogWarning("EyeBallMove: GlobalManager not found. Eye count persists only if your manager exists and is DontDestroyOnLoad.");
+        }
+    }
 
     void Update()
     {
-        // purely visual spin (doesn't affect physics)
+        // Spin for visuals
         transform.Rotate(0f, spinSpeed * Time.deltaTime, 0f, Space.Self);
+
+        // Simple Y-based fall check (world space)
+        if (!transitioning && transform.position.y < fallYThreshold)
+        {
+            TransitionToKitchen();
+        }
     }
 
     void FixedUpdate()
@@ -29,19 +63,48 @@ public class EyeBallMove : MonoBehaviour
         float x = Input.GetAxisRaw("Horizontal");
         float z = Input.GetAxisRaw("Vertical");
 
-        // desired horizontal velocity
-        Vector3 desired = new Vector3(x, 0f, z).normalized * speed;
+        // Choose directions
+        Vector3 fwd = Vector3.forward;
+        Vector3 right = Vector3.right;
+        if (cameraTransform)
+        {
+            fwd = cameraTransform.forward; fwd.y = 0f; fwd.Normalize();
+            right = cameraTransform.right;  right.y = 0f; right.Normalize();
+        }
 
-        // keep current Y (gravity), drive XZ
-        Vector3 v = rb.linearVelocity;
+        Vector3 moveDir = right * x + fwd * z;
+        if (moveDir.sqrMagnitude > 1f) moveDir.Normalize();
+
+        // Drive XZ, keep current Y
+        Vector3 v = rb.linearVelocity;                 // <— use velocity (not linearVelocity)
+        Vector3 desired = moveDir * speed;
         rb.linearVelocity = new Vector3(desired.x, v.y, desired.z);
 
-        // apply extra gravity (per-object scale)
+        // Extra gravity
         if (gravityScale != 1f)
         {
-            // add only the *extra* gravity beyond the default
             Vector3 extraGravity = Physics.gravity * (gravityScale - 1f);
             rb.AddForce(extraGravity, ForceMode.Acceleration);
         }
     }
+
+    private void TransitionToKitchen()
+    {
+        transitioning = true;
+
+        int savedCount = globalManager ? globalManager.numEyeBalls : -1;
+        Debug.Log($"Eyeball fell below {fallYThreshold}. Saving eyes={savedCount} and loading '{kitchenSceneName}'.");
+
+        SceneManager.LoadScene(kitchenSceneName);
+    }
+
+#if UNITY_EDITOR
+    void OnDrawGizmosSelected()
+    {
+        // Draw a thin gizmo line at the fall Y to help tune it
+        Gizmos.color = Color.red;
+        Vector3 c = new Vector3(transform.position.x, fallYThreshold, transform.position.z);
+        Gizmos.DrawLine(c + Vector3.left * 100f, c + Vector3.right * 100f);
+    }
+#endif
 }

@@ -450,7 +450,7 @@ MeshRenderer:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 363620602}
-  m_Enabled: 1
+  m_Enabled: 0
   m_CastShadows: 1
   m_ReceiveShadows: 1
   m_DynamicOccludee: 1
@@ -1021,9 +1021,9 @@ MonoBehaviour:
   numWormsCut: 0
   completedWorms: 0
   numTomatos: 0
+  numTomatosHit: 0
   completedTomatos: 0
-  mixScore: 0
-  placementScore: 0
+  mixScore: 1
   completedMix: 0
 --- !u!1001 &693857016
 PrefabInstance:
@@ -1046,7 +1046,7 @@ PrefabInstance:
     - target: {fileID: -8679921383154817045, guid: a118d3ed7f5295c459d5e6ca6ce28a6e,
         type: 3}
       propertyPath: m_LocalScale.z
-      value: 1
+      value: 1.5
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: a118d3ed7f5295c459d5e6ca6ce28a6e,
         type: 3}
@@ -1061,7 +1061,7 @@ PrefabInstance:
     - target: {fileID: -8679921383154817045, guid: a118d3ed7f5295c459d5e6ca6ce28a6e,
         type: 3}
       propertyPath: m_LocalPosition.z
-      value: -5.24024
+      value: -5.024
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: a118d3ed7f5295c459d5e6ca6ce28a6e,
         type: 3}
@@ -1803,7 +1803,7 @@ PrefabInstance:
     - target: {fileID: -8679921383154817045, guid: a118d3ed7f5295c459d5e6ca6ce28a6e,
         type: 3}
       propertyPath: m_LocalScale.z
-      value: 1
+      value: 1.5
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: a118d3ed7f5295c459d5e6ca6ce28a6e,
         type: 3}
@@ -1818,7 +1818,7 @@ PrefabInstance:
     - target: {fileID: -8679921383154817045, guid: a118d3ed7f5295c459d5e6ca6ce28a6e,
         type: 3}
       propertyPath: m_LocalPosition.z
-      value: -5.24024
+      value: -5.024
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: a118d3ed7f5295c459d5e6ca6ce28a6e,
         type: 3}
@@ -1900,7 +1900,7 @@ MeshRenderer:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1273976705}
-  m_Enabled: 1
+  m_Enabled: 0
   m_CastShadows: 1
   m_ReceiveShadows: 1
   m_DynamicOccludee: 1

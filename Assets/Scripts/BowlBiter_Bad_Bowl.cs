@@ -4,13 +4,17 @@ public class ClickMoveShakeBounce : MonoBehaviour
 {
     // ----- MOVEMENT SETTINGS -----
     public Vector3 targetPosition = new Vector3(122.9f, 64.3f, 119.4f);
-    public float speed = 2f;
+    public float moveSpeed = 2f;
 
     // ----- SHAKE SETTINGS -----
-    public float shakeAmount = 5f;    // how many degrees to rotate
-    public float shakeSpeed = 0.05f;  // how fast between shakes
-    public float shakeDuration = 2f;  // how long to shake
+    public float shakeAmount = 5f;
+    public float shakeSpeed = 0.05f;
+    public float minShakeDuration = 0.2f;
+    public float maxShakeDuration = 0.6f;
+    public float shakeInterval = 3f;
+
     float shakeTimer = 0f;
+    float shakeCooldown = 0f;
     bool isShaking = false;
     Quaternion originalRotation;
 
@@ -19,32 +23,56 @@ public class ClickMoveShakeBounce : MonoBehaviour
     public float maxX = 150f;
     public float minZ = 100f;
     public float maxZ = 150f;
-    public float fixedY = 64f; // height to stay at
+    public float groundY = 64f;
 
-    // ----- BOUNCING SETTINGS -----
+    // ----- BOUNCING -----
     public float bounceSpeed = 3f;
     private Vector3 bounceDirection;
 
-    // ----- INTERNAL VARIABLES -----
+    // ----- INTERNAL -----
     Camera mainCam;
     bool moveNow = false;
+
+    // ----- GLOBAL MANAGER -----
+    private GlobalManager globalManager;
 
     void Start()
     {
         mainCam = Camera.main;
         originalRotation = transform.rotation;
 
-        // random initial bounce direction (XZ plane only)
+        // random bounce direction (XZ only)
         bounceDirection = new Vector3(Random.Range(-1f, 1f), 0f, Random.Range(-1f, 1f)).normalized;
 
-        // fix initial Y
+        // keep at ground height
         Vector3 pos = transform.position;
-        pos.y = fixedY;
+        pos.y = groundY;
         transform.position = pos;
+
+        // randomize first shake
+        shakeCooldown = Random.Range(1f, shakeInterval);
+
+        // find global manager
+        globalManager = FindFirstObjectByType<GlobalManager>();
+        if (globalManager == null)
+        {
+            Debug.LogWarning("GlobalManager not found in scene!");
+        }
     }
 
     void Update()
     {
+        // passive shaking timer
+        if (!isShaking)
+        {
+            shakeCooldown -= Time.deltaTime;
+            if (shakeCooldown <= 0f)
+            {
+                StartShake();
+                shakeCooldown = shakeInterval;
+            }
+        }
+
         // ----- CLICK DETECTION -----
         if (Input.GetMouseButtonDown(0))
         {
@@ -55,39 +83,40 @@ public class ClickMoveShakeBounce : MonoBehaviour
                 if (hit.transform == transform)
                 {
                     moveNow = true;
+
+                    // increment numFails here
+                    if (globalManager != null)
+                    {
+                        globalManager.numFails++;
+                        Debug.Log($"Fail triggered! Total fails: {globalManager.numFails}");
+                    }
                 }
             }
         }
 
-        // ----- SMOOTH MOVEMENT TO TARGET -----
+        // ----- MOVE TO TARGET -----
         if (moveNow)
         {
             transform.position = Vector3.MoveTowards(
                 transform.position,
                 targetPosition,
-                speed * Time.deltaTime
+                moveSpeed * Time.deltaTime
             );
-
-            // keep Y fixed
-            Vector3 pos = transform.position;
-            pos.y = fixedY;
-            transform.position = pos;
 
             if (Vector3.Distance(transform.position, targetPosition) < 0.01f)
             {
                 moveNow = false;
-                StartShake();
             }
         }
 
-        // ----- SHAKING LOGIC -----
+        // ----- PASSIVE SHAKE -----
         if (isShaking)
         {
             ShakeObject();
         }
 
-        // ----- BOUNCING LOGIC (XZ only) -----
-        if (!moveNow) // only bounce when not moving to target
+        // ----- BOUNCING -----
+        if (!moveNow)
         {
             BounceXZ();
         }
@@ -96,7 +125,7 @@ public class ClickMoveShakeBounce : MonoBehaviour
     void StartShake()
     {
         isShaking = true;
-        shakeTimer = shakeDuration;
+        shakeTimer = Random.Range(minShakeDuration, maxShakeDuration);
     }
 
     void ShakeObject()
@@ -104,10 +133,9 @@ public class ClickMoveShakeBounce : MonoBehaviour
         shakeTimer -= Time.deltaTime;
 
         float randomX = Random.Range(-shakeAmount, shakeAmount);
-        float randomY = 0f; // don't shake vertically
         float randomZ = Random.Range(-shakeAmount, shakeAmount);
 
-        transform.Rotate(randomX, randomY, randomZ);
+        transform.Rotate(randomX, 0f, randomZ);
 
         if (shakeTimer <= 0f)
         {
@@ -120,17 +148,16 @@ public class ClickMoveShakeBounce : MonoBehaviour
     {
         Vector3 pos = transform.position;
         pos += bounceDirection * bounceSpeed * Time.deltaTime;
-        pos.y = fixedY; // keep Y fixed
+        pos.y = groundY;
 
-        // bounce on X axis
+        // bounce off walls
         if (pos.x <= minX || pos.x >= maxX)
             bounceDirection.x = -bounceDirection.x;
 
-        // bounce on Z axis
         if (pos.z <= minZ || pos.z >= maxZ)
             bounceDirection.z = -bounceDirection.z;
 
-        // clamp position inside bounds
+        // clamp inside room
         pos.x = Mathf.Clamp(pos.x, minX, maxX);
         pos.z = Mathf.Clamp(pos.z, minZ, maxZ);
 
