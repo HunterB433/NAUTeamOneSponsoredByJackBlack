@@ -23,6 +23,7 @@ public class GlobalManager : MonoBehaviour
 
     [Header("Hunter Tomatos")]
     public int numTomatos = 0;        // 0–100
+    public int numTomatosHit = 0;     // 0-100
     public bool completedTomatos = false;
 
     [Header("Hunter Mix")]
@@ -59,6 +60,7 @@ public class GlobalManager : MonoBehaviour
         completedWorms = false;
 
         numTomatos = 0;
+        numTomatosHit = 0;
         completedTomatos = false;
 
         mixScore = 0f;
