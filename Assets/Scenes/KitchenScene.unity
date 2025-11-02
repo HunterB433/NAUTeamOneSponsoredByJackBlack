@@ -1023,8 +1023,7 @@ MonoBehaviour:
   numTomatos: 0
   numTomatosHit: 0
   completedTomatos: 0
-  mixScore: 0
-  placementScore: 0
+  mixScore: 1
   completedMix: 0
 --- !u!1001 &693857016
 PrefabInstance:
