@@ -7,7 +7,7 @@ public class DetectionZone : MonoBehaviour
     public List<WormMove> wormsInZone = new List<WormMove>();
 
     private GlobalManager globalManager;
-
+    private AudioSource audioSource;
     void Start()
     {
         // Find the global manager in the scene (it’s marked as DontDestroyOnLoad)
@@ -16,6 +16,7 @@ public class DetectionZone : MonoBehaviour
         {
             Debug.LogWarning("[DetectionZone] GlobalManager not found in scene!");
         }
+        audioSource = GetComponent<AudioSource>();
     }
 
     private void OnTriggerEnter(Collider other)
@@ -48,6 +49,11 @@ public class DetectionZone : MonoBehaviour
     {
         if (wormsInZone.Count == 0 || globalManager == null)
             return;
+
+        if (audioSource != null)
+        {
+            audioSource.Play();
+        }
 
         // Add +1 per worm to numWormsCut
         globalManager.numWormsCut += wormsInZone.Count;
