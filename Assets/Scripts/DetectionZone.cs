@@ -1,4 +1,4 @@
-using UnityEngine;
+// using UnityEngine;
 
 public class DetectionZone : MonoBehaviour
 {
@@ -54,11 +54,11 @@ public class DetectionZone : MonoBehaviour
     //     // This method is called when another collider leaves the trigger zone.
     //     Debug.Log(other.name + " left the detection zone!");
 
-    //     // You can add specific logic here, e.g., deactivate an event.
-    //     if (other.CompareTag("Worm"))
-    //     {
-    //         Debug.Log("Worm left the detection zone!");
-    //         // Perform actions related to worm leaving
-    //     }
-    // }
-}
+//     //     // You can add specific logic here, e.g., deactivate an event.
+//     //     if (other.CompareTag("Worm"))
+//     //     {
+//     //         Debug.Log("Worm left the detection zone!");
+//     //         // Perform actions related to worm leaving
+//     //     }
+//     // }
+// }
