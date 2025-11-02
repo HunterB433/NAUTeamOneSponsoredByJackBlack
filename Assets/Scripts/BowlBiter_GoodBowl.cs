@@ -1,22 +1,13 @@
 using UnityEngine;
 
-public class ClickMoveShakeBounce : MonoBehaviour
+public class ClickMoveBounce : MonoBehaviour
 {
+    // ----- REFERENCE TO SCRIPT B -----
+    public TeleportAndRotate objectBScript;
+
     // ----- MOVEMENT SETTINGS -----
     public Vector3 targetPosition = new Vector3(122.9f, 64.3f, 119.4f);
     public float moveSpeed = 2f;
-
-    // ----- SHAKE SETTINGS -----
-    public float shakeAmount = 5f;
-    public float shakeSpeed = 0.05f;
-    public float minShakeDuration = 0.2f; // new min
-    public float maxShakeDuration = 0.6f; // new max
-    public float shakeInterval = 3f; // time between shakes
-
-    float shakeTimer = 0f;
-    float shakeCooldown = 0f;
-    bool isShaking = false;
-    Quaternion originalRotation;
 
     // ----- ROOM BOUNDS (XZ only) -----
     public float minX = 100f;
@@ -30,13 +21,12 @@ public class ClickMoveShakeBounce : MonoBehaviour
     private Vector3 bounceDirection;
 
     // ----- INTERNAL VARIABLES -----
-    Camera mainCam;
-    bool moveNow = false;
+    private Camera mainCam;
+    private bool moveNow = false;
 
     void Start()
     {
         mainCam = Camera.main;
-        originalRotation = transform.rotation;
 
         // random bounce direction (XZ only)
         bounceDirection = new Vector3(Random.Range(-1f, 1f), 0f, Random.Range(-1f, 1f)).normalized;
@@ -45,24 +35,10 @@ public class ClickMoveShakeBounce : MonoBehaviour
         Vector3 pos = transform.position;
         pos.y = groundY;
         transform.position = pos;
-
-        // randomize first shake
-        shakeCooldown = Random.Range(1f, shakeInterval);
     }
 
     void Update()
     {
-        // passive shaking timer
-        if (!isShaking)
-        {
-            shakeCooldown -= Time.deltaTime;
-            if (shakeCooldown <= 0f)
-            {
-                StartShake();
-                shakeCooldown = shakeInterval;
-            }
-        }
-
         // ----- CLICK DETECTION -----
         if (Input.GetMouseButtonDown(0))
         {
@@ -73,6 +49,7 @@ public class ClickMoveShakeBounce : MonoBehaviour
                 if (hit.transform == transform)
                 {
                     moveNow = true;
+                    Debug.Log("Object clicked!");
                 }
             }
         }
@@ -89,41 +66,21 @@ public class ClickMoveShakeBounce : MonoBehaviour
             if (Vector3.Distance(transform.position, targetPosition) < 0.01f)
             {
                 moveNow = false;
-            }
-        }
+                Debug.Log("YOU WIN!!!");
 
-        // ----- PASSIVE SHAKE -----
-        if (isShaking)
-        {
-            ShakeObject();
+                // ----- TRIGGER SCRIPT B ON OBJECT B -----
+                if (objectBScript != null)
+                {
+                    objectBScript.ActivateSequence();
+                    Debug.Log("Triggered Object B!");
+                }
+            }
         }
 
         // ----- BOUNCING -----
         if (!moveNow)
         {
             BounceXZ();
-        }
-    }
-
-    void StartShake()
-    {
-        isShaking = true;
-        shakeTimer = Random.Range(minShakeDuration, maxShakeDuration); // 🎲 randomized each shake
-    }
-
-    void ShakeObject()
-    {
-        shakeTimer -= Time.deltaTime;
-
-        float randomX = Random.Range(-shakeAmount, shakeAmount);
-        float randomZ = Random.Range(-shakeAmount, shakeAmount);
-
-        transform.Rotate(randomX, 0f, randomZ);
-
-        if (shakeTimer <= 0f)
-        {
-            isShaking = false;
-            transform.rotation = originalRotation;
         }
     }
 
