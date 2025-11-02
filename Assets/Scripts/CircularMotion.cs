@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using System.Collections;
 using System.Collections.Generic;
 
@@ -24,34 +25,59 @@ public class CircleMover : MonoBehaviour
     private float angle;
     private int currentIndex = 0;
     private bool isMoving = false;
+    private float frozenX;
+    private int clickCount = 0;
+
+    private GlobalManager gm;
+
+    void Start()
+    {
+        frozenX = transform.position.x;
+
+        // Find the GlobalManager (it should be tagged "GlobalManager")
+        gm = FindFirstObjectByType<GlobalManager>();
+        if (gm == null)
+        {
+            Debug.LogError("GlobalManager not found in scene!");
+        }
+    }
 
     void Update()
     {
         if (orbitingObject == null)
             return;
 
-        // Move orbiting object in a circular path (X-Y plane)
+        // --- Orbiting on Y–Z plane (X stays frozen) ---
         angle += speed * Mathf.Deg2Rad * Time.deltaTime;
-        float x = Mathf.Cos(angle) * radius;
-        float y = Mathf.Sin(angle) * radius;
-        orbitingObject.position = transform.position + new Vector3(x, y, 0f);
+        float y = Mathf.Cos(angle) * radius;
+        float z = Mathf.Sin(angle) * radius;
+        orbitingObject.position = new Vector3(frozenX, transform.position.y + y, transform.position.z + z);
 
-        // On click
+        // --- On click ---
         if (Input.GetMouseButtonDown(0))
         {
-            // Distance and speed increase logic
+            clickCount++;
+
+            // Distance and score logic
             if (targetObject != null)
             {
-                Vector2 orbPos = new Vector2(orbitingObject.position.x, orbitingObject.position.y);
-                Vector2 targetPos = new Vector2(targetObject.position.x, targetObject.position.y);
+                Vector2 orbPos = new Vector2(orbitingObject.position.y, orbitingObject.position.z);
+                Vector2 targetPos = new Vector2(targetObject.position.y, targetObject.position.z);
                 float distance = Vector2.Distance(orbPos, targetPos);
                 float maxDistance = radius * 2f;
                 float percent = Mathf.Clamp01(1f - (distance / maxDistance)) * 100f;
-                Debug.Log($"Distance: {distance:F3} | Score: {percent:F1}% | Speed: {speed:F1}");
+
+                // Multiply by mixScore from GlobalManager
+                if (gm != null)
+                {
+                    gm.mixScore *= (percent/100);
+                }
+
+                Debug.Log($"Distance: {distance:F3} | Weighted Score: {percent:F1}% | Speed: {speed:F1}");
                 speed *= speedIncreaseFactor;
             }
 
-            // Ingredient movement logic
+            // Ingredient movement logic (XYZ allowed)
             if (!isMoving && currentIndex < ingredients.Count && pot != null)
             {
                 StartCoroutine(MoveIngredient(ingredients[currentIndex]));
@@ -60,6 +86,12 @@ public class CircleMover : MonoBehaviour
             else if (currentIndex >= ingredients.Count)
             {
                 Debug.Log("All ingredients have been moved into the pot.");
+            }
+
+            // After 4 clicks, complete the mix
+            if (clickCount >= 4)
+            {
+                StartCoroutine(FinishMix());
             }
         }
     }
@@ -73,7 +105,6 @@ public class CircleMover : MonoBehaviour
         Vector3 targetPos = pot.position;
         float t = 0f;
 
-        // Smooth linear move
         while (t < 1f)
         {
             t += Time.deltaTime * moveSpeed;
@@ -84,5 +115,19 @@ public class CircleMover : MonoBehaviour
         ingredient.transform.position = targetPos;
         Debug.Log($"Finished moving {ingredient.name} into the pot.");
         isMoving = false;
+    }
+
+    IEnumerator FinishMix()
+    {
+        Debug.Log("Mix complete! Returning to KitchenScene in 2 seconds...");
+        yield return new WaitForSeconds(2f);
+
+        if (gm != null)
+        {
+            gm.completedMix = true;
+            Debug.Log("GlobalManager: completedMix set to true");
+        }
+
+        SceneManager.LoadScene("KitchenScene");
     }
 }
