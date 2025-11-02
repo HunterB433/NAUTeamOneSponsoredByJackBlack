@@ -1,45 +1,47 @@
 using UnityEngine;
 
-public class ClickMoveAndShake : MonoBehaviour
+public class ClickMoveShakeBounce : MonoBehaviour
 {
     // ----- MOVEMENT SETTINGS -----
     public Vector3 targetPosition = new Vector3(122.9f, 64.3f, 119.4f);
     public float speed = 2f;
 
     // ----- SHAKE SETTINGS -----
-    public float shakeAmount = 5f;   // how many degrees to rotate
-    public float shakeSpeed = 0.05f; // how fast between shakes
-    public float shakeDuration = 2f; // how long to shake
-
+    public float shakeAmount = 5f;    // how many degrees to rotate
+    public float shakeSpeed = 0.05f;  // how fast between shakes
+    public float shakeDuration = 2f;  // how long to shake
     float shakeTimer = 0f;
     bool isShaking = false;
+    Quaternion originalRotation;
+
+    // ----- WALL SETTINGS -----
+    public float leftWall = 100f;
+    public float rightWall = 150f;
+    public float backWall = 100f;
+    public float frontWall = 150f;
+    public float bottomWall = 60f;
+    public float topWall = 70f;
+
+    // ----- BOUNCING SETTINGS -----
+    public float bounceSpeed = 3f;
+    private Vector3 bounceDirection;
 
     // ----- INTERNAL VARIABLES -----
     Camera mainCam;
     bool moveNow = false;
-    float timer;
 
     void Start()
     {
         mainCam = Camera.main;
-        timer = Random.Range(1f, 10f);
+        originalRotation = transform.rotation;
+
+        // random initial bounce direction
+        bounceDirection = new Vector3(Random.Range(-1f, 1f), 0f, Random.Range(-1f, 1f)).normalized;
     }
 
     void Update()
     {
-        // timer countdown
-        if (timer > 0f)
-        {
-            timer -= Time.deltaTime;
-        }
-        else
-        {
-            // start shaking when timer runs out
-            StartShake();
-            timer = Random.Range(4f, 8f); // wait again before next shake
-        }
-
-        // click detection
+        // ----- CLICK DETECTION -----
         if (Input.GetMouseButtonDown(0))
         {
             Ray ray = mainCam.ScreenPointToRay(Input.mousePosition);
@@ -53,7 +55,7 @@ public class ClickMoveAndShake : MonoBehaviour
             }
         }
 
-        // smooth movement
+        // ----- SMOOTH MOVEMENT TO TARGET -----
         if (moveNow)
         {
             transform.position = Vector3.MoveTowards(
@@ -65,13 +67,20 @@ public class ClickMoveAndShake : MonoBehaviour
             if (Vector3.Distance(transform.position, targetPosition) < 0.01f)
             {
                 moveNow = false;
+                StartShake();
             }
         }
 
-        // shaking logic
+        // ----- SHAKING LOGIC -----
         if (isShaking)
         {
             ShakeObject();
+        }
+
+        // ----- BOUNCING LOGIC -----
+        if (!moveNow) // only bounce when not moving to target
+        {
+            BounceAround();
         }
     }
 
@@ -94,7 +103,28 @@ public class ClickMoveAndShake : MonoBehaviour
         if (shakeTimer <= 0f)
         {
             isShaking = false;
-            transform.rotation = Quaternion.identity; // reset to normal rotation
+            transform.rotation = originalRotation;
         }
+    }
+
+    void BounceAround()
+    {
+        transform.position += bounceDirection * bounceSpeed * Time.deltaTime;
+
+        // bounce off walls
+        if (transform.position.x <= leftWall || transform.position.x >= rightWall)
+            bounceDirection.x = -bounceDirection.x;
+
+        if (transform.position.y <= bottomWall || transform.position.y >= topWall)
+            bounceDirection.y = -bounceDirection.y;
+
+        if (transform.position.z <= backWall || transform.position.z >= frontWall)
+            bounceDirection.z = -bounceDirection.z;
+
+        // clamp position so it stays inside the room
+        float x = Mathf.Clamp(transform.position.x, leftWall, rightWall);
+        float y = Mathf.Clamp(transform.position.y, bottomWall, topWall);
+        float z = Mathf.Clamp(transform.position.z, backWall, frontWall);
+        transform.position = new Vector3(x, y, z);
     }
 }
