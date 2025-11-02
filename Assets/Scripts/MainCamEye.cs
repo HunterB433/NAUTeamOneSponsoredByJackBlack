@@ -9,7 +9,7 @@ public class ThirdPersonFollowSticky : MonoBehaviour
 
     [Header("Offset (world space)")]
     public Vector3 offset = new Vector3(0f, 5f, -14f);   // farther back = more negative Z
-    public float minDistance = 0.6f;                     // how close the camera is allowed to get
+    public float minDistance = 0.6f;                     // how  close the camera is allowed to get
 
     [Header("Smoothing")]
     public float smoothTime = 0.15f;
